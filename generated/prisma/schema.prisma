@@ -17,6 +17,13 @@ enum Role {
   AUTHOR
 }
 
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
+}
+
 model User {
   id       Int       @id @default(autoincrement())
   email    String    @unique
@@ -45,6 +52,6 @@ model Comment {
   content   String
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
-  post      Post     @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int
 }

@@ -1,21 +1,24 @@
 {
-  "name": "blog-api",
+  "name": "blog-api-ts",
   "version": "1.0.0",
   "description": "",
-  "homepage": "https://github.com/nzubeifechukwu/blog-api#readme",
+  "homepage": "https://github.com/nzubeifechukwu/blog-api-ts#readme",
   "bugs": {
-    "url": "https://github.com/nzubeifechukwu/blog-api/issues"
+    "url": "https://github.com/nzubeifechukwu/blog-api-ts/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nzubeifechukwu/blog-api.git"
+    "url": "git+https://github.com/nzubeifechukwu/blog-api-ts.git"
   },
   "license": "ISC",
   "author": "nzubeifechukwu",
   "type": "commonjs",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx watch src/app.js",
+    "build": "tsc",
+    "start": "node dist/app.js"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.7.0",
@@ -34,6 +37,13 @@
     "pg": "^8.20.0"
   },
   "devDependencies": {
-    "prisma": "^7.7.0"
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^26.1.0",
+    "@types/passport": "^1.0.17",
+    "prisma": "^7.7.0",
+    "tsx": "^4.23.0",
+    "typescript": "^6.0.3"
   }
 }

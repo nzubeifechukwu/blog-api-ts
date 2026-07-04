@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 function home(req, res) {
   return res.status(200).json({
     message: "Welcome to Nzube's Blog API",
-    docs: "Please refer to the README.md file at https://github.com/nzubeifechukwu/blog-api for how to set up your environment and test the API endpoints.",
+    docs: "Please refer to the README.md file at https://github.com/nzubeifechukwu/blog-api-ts for how to set up your environment and test the API endpoints.",
     endpoints: { user: "/users", posts: "/posts", comments: "/comments" },
   });
 }
