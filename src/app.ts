@@ -15,8 +15,13 @@ import {
 } from "./authenticators/authenticators.js";
 import errorHandler from "./middleware/errorHandler.js";
 
+const sessionSecret = process.env.SECRET;
+if (!sessionSecret) {
+  throw new Error("FATAL CONFIG ERROR: process.env.SECRET is required.");
+}
+
 const app = express();
-const PORT = 10000; // Render uses port 10000
+const PORT = process.env.PORT || 10000; // Render uses port 10000
 
 app.use(cors());
 app.use(express.json());
@@ -26,7 +31,7 @@ app.use(
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week in milliseconds
     },
-    secret: `${process.env.SECRET}`,
+    secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
     store: new PrismaSessionStore(prisma, {
