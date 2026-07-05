@@ -47,9 +47,10 @@ passport.deserializeUser(deserializeSession);
 app.use("/", router);
 app.use(errorHandler);
 
-app.listen(PORT, (error) => {
-  if (error) {
-    throw error;
-  }
+const server = app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
+});
+
+server.on("error", (error: Error) => {
+  console.error("Server failed to start:", error);
 });
