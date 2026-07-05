@@ -1,8 +1,27 @@
 import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcryptjs";
-import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import {
+  Strategy as JwtStrategy,
+  ExtractJwt,
+  VerifiedCallback,
+} from "passport-jwt";
+import { User as PrismaUser } from "@prisma/client";
 
 import prisma from "../lib/prisma.js";
+
+// Extend Express User interface so req.user maps cleanly across the app
+export type SafeUser = Omit<PrismaUser, "password">; // Omit password field globally
+declare global {
+  namespace Express {
+    interface User extends SafeUser {}
+  }
+}
+
+interface JwtPayload {
+  userId: number;
+  iat?: number;
+  exp?: number;
+}
 
 const localStrategy = new LocalStrategy(
   { usernameField: "email", passwordField: "password" },
@@ -29,11 +48,17 @@ const localStrategy = new LocalStrategy(
   },
 );
 
-function serializeSession(user, done) {
+function serializeSession(
+  user: Express.User | PrismaUser,
+  done: (err: any, id?: number) => void,
+) {
   done(null, user.id);
 }
 
-async function deserializeSession(id, done) {
+async function deserializeSession(
+  id: number,
+  done: (err: any, user?: PrismaUser | null) => void,
+) {
   try {
     const user = await prisma.user.findUnique({ where: { id: id } });
     done(null, user);
@@ -42,12 +67,19 @@ async function deserializeSession(id, done) {
   }
 }
 
+const secretKey = process.env.SECRET;
+if (!secretKey) {
+  throw new Error(
+    "FATAL: JWT secret key missing from environment configuration.",
+  );
+}
+
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: `${process.env.SECRET}`,
+  secretOrKey: secretKey,
 };
 
-const jwtStrategy = new JwtStrategy(jwtOptions, async (payload, done) => {
+const jwtStrategy = new JwtStrategy(jwtOptions, async (payload: JwtPayload, done: VerifiedCallback) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: payload.userId },
