@@ -1,30 +1,42 @@
-const { Router } = require("express");
-const passport = require("passport");
+import { Router } from "express";
+import passport from "passport";
 
-const controllers = require("../controllers/controllers");
-const { requireAuthor, optionalAuth } = require("../middleware/auth");
-const {
+import {
+  home,
+  createUser,
+  loginUser,
+  createPost,
+  updateRole,
+  getPublishedPosts,
+  getPostById,
+  createComment,
+  updatePost,
+  deletePost,
+  deleteComment,
+} from "../controllers/controllers.js";
+import { requireAuthor, optionalAuth } from "../middleware/auth.js";
+import {
   idParamValidator,
   signUpValidator,
   postValidator,
   commentValidator,
-} = require("../middleware/validators");
+} from "../middleware/validators.js";
 
 const router = Router();
 
 // Public routes
-router.get("/", controllers.home);
-router.get("/posts", controllers.getPublishedPosts);
+router.get("/", home);
+router.get("/posts", getPublishedPosts);
 router.get(
   "/posts/:id",
   optionalAuth, // allows authors to see their unpublished drafts
   idParamValidator,
-  controllers.getPostById,
+  getPostById,
 );
 
 // Authentication & Registration
-router.post("/users", signUpValidator, controllers.createUser);
-router.post("/login", controllers.loginUser);
+router.post("/users", signUpValidator, createUser);
+router.post("/login", loginUser);
 
 // Protected routes
 router.post(
@@ -32,37 +44,37 @@ router.post(
   passport.authenticate("jwt", { session: false }), // Authenticate the user (Verify token & set req.user)
   requireAuthor, // Check if the user has the AUTHOR role
   postValidator,
-  controllers.createPost,
+  createPost,
 );
 router.patch(
   "/users/role",
   passport.authenticate("jwt", { session: false }),
-  controllers.updateRole,
+  updateRole,
 );
 router.post(
   "/posts/:id/comments",
   passport.authenticate("jwt", { session: false }),
   idParamValidator,
   commentValidator,
-  controllers.createComment,
+  createComment,
 );
 router.patch(
   "/posts/:id",
   passport.authenticate("jwt", { session: false }),
   idParamValidator,
-  controllers.updatePost,
+  updatePost,
 );
 router.delete(
   "/posts/:id",
   passport.authenticate("jwt", { session: false }),
   idParamValidator,
-  controllers.deletePost,
+  deletePost,
 );
 router.delete(
   "/comments/:id",
   passport.authenticate("jwt", { session: false }),
   idParamValidator,
-  controllers.deleteComment,
+  deleteComment,
 );
 
-module.exports = router;
+export default router;

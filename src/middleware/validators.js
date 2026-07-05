@@ -1,4 +1,4 @@
-const { body, param, validationResult } = require("express-validator");
+import { body, param, validationResult } from "express-validator";
 
 function validateRequest(req, res, next) {
   const errors = validationResult(req);
@@ -69,9 +69,4 @@ const idParamValidator = [
   validateRequest,
 ];
 
-module.exports = {
-  signUpValidator,
-  postValidator,
-  commentValidator,
-  idParamValidator,
-};
+export { signUpValidator, postValidator, commentValidator, idParamValidator };

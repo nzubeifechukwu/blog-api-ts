@@ -1,4 +1,4 @@
-const passport = require("passport");
+import passport from "passport";
 
 // Strict role authorization guard (for author-only actions like POST /posts)
 function requireAuthor(req, res, next) {
@@ -30,4 +30,4 @@ function optionalAuth(req, res, next) {
   })(req, res, next);
 }
 
-module.exports = { requireAuthor, optionalAuth };
+export { requireAuthor, optionalAuth };

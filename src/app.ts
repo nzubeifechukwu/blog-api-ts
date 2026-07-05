@@ -1,19 +1,19 @@
 import "dotenv/config";
-import "express";
-import "express-session";
-const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
-const passport = require("passport");
-const cors = require("cors");
+import express from "express";
+import session from "express-session";
+import { PrismaSessionStore } from "@quixo3/prisma-session-store";
+import passport from "passport";
+import cors from "cors";
 
-const prisma = require("./lib/prisma");
-const router = require("./routes/router");
-const {
+import prisma from "./lib/prisma.js";
+import router from "./routes/router.js";
+import {
   localStrategy,
   serializeSession,
   deserializeSession,
   jwtStrategy,
-} = require("./authenticators/authenticators");
-const errorHandler = require("./middleware/errorHandler");
+} from "./authenticators/authenticators.js";
+import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();
 const PORT = 10000; // Render uses port 10000

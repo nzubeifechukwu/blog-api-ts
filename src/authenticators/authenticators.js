@@ -1,8 +1,8 @@
-const prisma = require("../lib/prisma");
-const LocalStrategy = require("passport-local").Strategy;
-const bcrypt = require("bcryptjs");
-const JwtStrategy = require("passport-jwt").Strategy;
-const ExtractJwt = require("passport-jwt").ExtractJwt;
+import { Strategy as LocalStrategy } from "passport-local";
+import bcrypt from "bcryptjs";
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+
+import prisma from "../lib/prisma.js";
 
 const localStrategy = new LocalStrategy(
   { usernameField: "email", passwordField: "password" },
@@ -63,9 +63,4 @@ const jwtStrategy = new JwtStrategy(jwtOptions, async (payload, done) => {
   }
 });
 
-module.exports = {
-  localStrategy,
-  serializeSession,
-  deserializeSession,
-  jwtStrategy,
-};
+export { localStrategy, serializeSession, deserializeSession, jwtStrategy };

@@ -1,7 +1,7 @@
-require("dotenv").config();
-const prisma = require("../lib/prisma");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+import prisma from "../lib/prisma.js";
 
 function home(req, res) {
   return res.status(200).json({
@@ -315,7 +315,7 @@ async function deleteComment(req, res, next) {
   }
 }
 
-module.exports = {
+export {
   home,
   createUser,
   loginUser,
