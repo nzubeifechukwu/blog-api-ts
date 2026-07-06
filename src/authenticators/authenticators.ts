@@ -10,7 +10,7 @@ import { User as PrismaUser } from "@prisma/client";
 import prisma from "../lib/prisma.js";
 
 // Extend Express User interface so req.user maps cleanly across the app
-export type SafeUser = Omit<PrismaUser, "password">; // Omit password field globally
+export type SafeUser = Omit<PrismaUser, "password">; // Omit password field
 declare global {
   namespace Express {
     interface User extends SafeUser {}
