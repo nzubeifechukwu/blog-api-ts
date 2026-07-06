@@ -1,4 +1,9 @@
-import { body, param, validationResult } from "express-validator";
+import {
+  body,
+  FieldValidationError,
+  param,
+  validationResult,
+} from "express-validator";
 import { Request, Response, NextFunction } from "express";
 
 function validateRequest(req: Request, res: Response, next: NextFunction) {
@@ -7,9 +12,11 @@ function validateRequest(req: Request, res: Response, next: NextFunction) {
   if (!errors.isEmpty()) {
     return res.status(400).json({
       status: "fail",
-      errors: errors
-        .array()
-        .map((err) => ({ field: err.path, message: err.msg })),
+      errors: errors.array().map((err) => {
+        // Cast err safely as FieldValidationError to ensure it has a path property
+        const fieldError = err as FieldValidationError;
+        return { field: fieldError.path, message: err.msg };
+      }),
     });
   }
 
@@ -66,7 +73,8 @@ const commentValidator = [
 const idParamValidator = [
   param("id")
     .isInt({ min: 1 })
-    .withMessage("The provided ID must be a valid positive integer."),
+    .withMessage("The provided ID must be a valid positive integer.")
+    .toInt(),
   validateRequest,
 ];
 
