@@ -5,13 +5,13 @@ import {
   ExtractJwt,
   VerifiedCallback,
 } from "passport-jwt";
-import { User as PrismaUser } from "@prisma/client";
 
+import { User as PrismaUser } from "@prisma/client";
 import prisma from "../lib/prisma.js";
 
 // Extend Express User interface so req.user maps cleanly across the app
 export type SafeUser = Omit<PrismaUser, "password">; // Omit password field
-declare global {
+declare global { // Ensures you can use Express.User interface in other files without importing it
   namespace Express {
     interface User extends SafeUser {}
   }
