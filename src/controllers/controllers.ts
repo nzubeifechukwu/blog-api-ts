@@ -71,7 +71,9 @@ async function loginUser(req: Request, res: Response, next: NextFunction) {
     }
 
     const jwtSecret = process.env.SECRET;
-    if (!jwtSecret) throw new Error("JWT Secret is not defined");
+    if (!jwtSecret) {
+      throw new Error("JWT Secret is not defined in environment variables.");
+    }
 
     const token = jwt.sign(
       { userId: user.id, role: user.role },
@@ -89,11 +91,17 @@ async function loginUser(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-async function createPost(req, res, next) {
+async function createPost(req: Request, res: Response, next: NextFunction) {
   const { title, content, published } = req.body;
 
   if (!title || !content) {
     return res.status(400).json({ message: "Title and content are required." });
+  }
+  
+  if (!req.user) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized. User profile not found." });
   }
 
   try {
