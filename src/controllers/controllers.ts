@@ -50,7 +50,7 @@ async function createUser(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-async function loginUser(req, res, next) {
+async function loginUser(req: Request, res: Response, next: NextFunction) {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -69,6 +69,9 @@ async function loginUser(req, res, next) {
     if (!isPasswordCorrect) {
       return res.status(401).json({ message: "Invalid email or password." });
     }
+
+    const jwtSecret = process.env.SECRET;
+    if (!jwtSecret) throw new Error("JWT Secret is not defined");
 
     const token = jwt.sign(
       { userId: user.id, role: user.role },
