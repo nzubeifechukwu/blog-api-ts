@@ -6,7 +6,7 @@ import passport from "passport";
 import cors from "cors";
 
 import prisma from "./lib/prisma.js";
-import router from "./routes/router.js";
+import router from "./routes/routes.js";
 import {
   localStrategy,
   serializeSession,

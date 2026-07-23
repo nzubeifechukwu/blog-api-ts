@@ -1,9 +1,11 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction } from "express";
+import { Role } from "@prisma/client";
 
 import prisma from "../lib/prisma.js";
 
-function home(req, res) {
+function home(req: Request, res: Response) {
   return res.status(200).json({
     message: "Welcome to Nzube's Blog API",
     docs: "Please refer to the README.md file at https://github.com/nzubeifechukwu/blog-api-ts for how to set up your environment and test the API endpoints.",
@@ -11,7 +13,7 @@ function home(req, res) {
   });
 }
 
-async function createUser(req, res, next) {
+async function createUser(req: Request, res: Response, next: NextFunction) {
   const { email, name, password, role } = req.body;
 
   if (!email || !password) {
@@ -33,7 +35,7 @@ async function createUser(req, res, next) {
         email,
         name,
         password: hashedPassword,
-        role: role || "READER", // defaults to READER if not provided
+        role: role || Role.READER, // defaults to READER if not provided
       },
     });
 

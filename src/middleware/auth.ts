@@ -1,6 +1,5 @@
 import passport from "passport";
 import { Request, Response, NextFunction } from "express";
-
 import { Role } from "@prisma/client";
 
 // Strict role authorization guard (for author-only actions like POST /posts)
