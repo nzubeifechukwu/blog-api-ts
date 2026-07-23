@@ -97,7 +97,7 @@ async function createPost(req: Request, res: Response, next: NextFunction) {
   if (!title || !content) {
     return res.status(400).json({ message: "Title and content are required." });
   }
-  
+
   if (!req.user) {
     return res
       .status(401)
@@ -122,20 +122,28 @@ async function createPost(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-async function updateRole(req, res, next) {
+async function updateRole(req: Request, res: Response, next: NextFunction) {
   const { role } = req.body;
 
-  const validRoles = ["READER", "AUTHOR"];
-  if (!role || !validRoles.includes(role.toUpperCase())) {
+  const formattedRole = typeof role === "string" ? role.toUpperCase() : "";
+
+  // Validate against Prisma's Role enum values
+  if (!role || !Object.values(Role).includes(formattedRole as Role)) {
     return res
       .status(400)
       .json({ message: "Invalid role. Choose either 'READER' or 'AUTHOR'." });
   }
 
+  if (!req.user) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized. User profile not found." });
+  }
+
   try {
     const updatedUser = await prisma.user.update({
       where: { id: req.user.id }, // req.user.id is available because this route will be protected by JWT
-      data: { role: role.toUpperCase() },
+      data: { role: formattedRole as Role }, // Cast to Prisma Role enum
     });
 
     const { password: _, ...userWithoutPassword } = updatedUser;
