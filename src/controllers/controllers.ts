@@ -156,7 +156,11 @@ async function updateRole(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-async function getPublishedPosts(req, res, next) {
+async function getPublishedPosts(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const posts = await prisma.post.findMany({
       where: { published: true },
@@ -166,18 +170,18 @@ async function getPublishedPosts(req, res, next) {
       orderBy: { createdAt: "desc" }, // Show newest posts first
     });
 
-    return res.status(200).json({ count: posts.length, posts: posts });
+    return res.status(200).json({ count: posts.length, posts });
   } catch (error) {
     next(error);
   }
 }
 
-async function getPostById(req, res, next) {
+async function getPostById(req: Request, res: Response, next: NextFunction) {
   const { id } = req.params;
 
   try {
     const post = await prisma.post.findUnique({
-      where: { id: parseInt(id) },
+      where: { id: parseInt(id as string) },
       include: {
         author: { select: { id: true, name: true, role: true } },
         comments: {
@@ -206,17 +210,24 @@ async function getPostById(req, res, next) {
   }
 }
 
-async function createComment(req, res, next) {
+async function createComment(req: Request, res: Response, next: NextFunction) {
   const { content } = req.body;
-  const { id: postId } = req.params; // Rename "id" to "postId"
+  const { id } = req.params;
+  const postId = parseInt(id as string);
 
   if (!content || content.trim() === "") {
     return res.status(400).json({ message: "Comment cannot be empty." });
   }
 
+  if (!req.user) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized. User profile not found." });
+  }
+
   try {
     const post = await prisma.post.findUnique({
-      where: { id: parseInt(postId) },
+      where: { id: postId },
     });
     if (!post) {
       return res.status(404).json({ message: "Article doesn't exist." });
@@ -228,7 +239,7 @@ async function createComment(req, res, next) {
     }
 
     const newComment = await prisma.comment.create({
-      data: { content, postId: parseInt(postId), authorId: req.user.id },
+      data: { content, postId, authorId: req.user.id },
     });
 
     return res
