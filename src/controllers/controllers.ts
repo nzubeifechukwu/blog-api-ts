@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import { Role } from "@prisma/client";
+import { Prisma, Role } from "@prisma/client";
 
 import prisma from "../lib/prisma.js";
 
@@ -181,7 +181,7 @@ async function getPostById(req: Request, res: Response, next: NextFunction) {
 
   try {
     const post = await prisma.post.findUnique({
-      where: { id: parseInt(id as string) },
+      where: { id: parseInt(id as string, 10) },
       include: {
         author: { select: { id: true, name: true, role: true } },
         comments: {
@@ -213,7 +213,7 @@ async function getPostById(req: Request, res: Response, next: NextFunction) {
 async function createComment(req: Request, res: Response, next: NextFunction) {
   const { content } = req.body;
   const { id } = req.params;
-  const postId = parseInt(id as string);
+  const postId = parseInt(id as string, 10);
 
   if (!content || content.trim() === "") {
     return res.status(400).json({ message: "Comment cannot be empty." });
@@ -250,12 +250,20 @@ async function createComment(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-async function updatePost(req, res, next) {
+async function updatePost(req: Request, res: Response, next: NextFunction) {
   const { id } = req.params;
   const { title, content, published } = req.body;
 
+  if (!req.user) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized. User profile not found." });
+  }
+
   try {
-    const post = await prisma.post.findUnique({ where: { id: parseInt(id) } });
+    const post = await prisma.post.findUnique({
+      where: { id: parseInt(id as string, 10) },
+    });
 
     if (!post) {
       return res.status(404).json({ message: "Article not found." });
@@ -267,20 +275,20 @@ async function updatePost(req, res, next) {
       });
     }
 
-    const updateData = {};
+    const updatedData: Prisma.PostUpdateInput = {};
     if (title !== undefined) {
-      updateData.title = title;
+      updatedData.title = title;
     }
     if (content !== undefined) {
-      updateData.content = content;
+      updatedData.content = content;
     }
     if (published !== undefined) {
-      updateData.published = published === true || published === "true"; // Save as a Boolean true/false
+      updatedData.published = published === true || published === "true"; // Save as a Boolean true/false
     }
 
     const updatedPost = await prisma.post.update({
-      where: { id: parseInt(id) },
-      data: updateData,
+      where: { id: parseInt(id as string, 10) },
+      data: updatedData,
     });
 
     return res.status(200).json({
@@ -292,11 +300,19 @@ async function updatePost(req, res, next) {
   }
 }
 
-async function deletePost(req, res, next) {
+async function deletePost(req: Request, res: Response, next: NextFunction) {
   const { id } = req.params;
 
+  if (!req.user) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized. User profile not found." });
+  }
+
   try {
-    const post = await prisma.post.findUnique({ where: { id: parseInt(id) } });
+    const post = await prisma.post.findUnique({
+      where: { id: parseInt(id as string, 10) },
+    });
 
     if (!post) {
       return res.status(404).json({ message: "Article not found." });
@@ -309,8 +325,7 @@ async function deletePost(req, res, next) {
     }
 
     await prisma.post.delete({
-      where: { id: parseInt(id) },
-      include: { comments: true },
+      where: { id: parseInt(id as string, 10) },
     });
 
     return res.status(200).json({ message: "Post deleted successfully." });
@@ -319,29 +334,38 @@ async function deletePost(req, res, next) {
   }
 }
 
-async function deleteComment(req, res, next) {
+async function deleteComment(req: Request, res: Response, next: NextFunction) {
   const { id } = req.params;
+
+  if (!req.user) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized. User profile not found." });
+  }
 
   try {
     const comment = await prisma.comment.findUnique({
-      where: { id: parseInt(id) },
+      where: { id: parseInt(id as string, 10) },
       include: { post: { select: { authorId: true } } },
     });
     if (!comment) {
       return res.status(404).json({ message: "Comment not found." });
     }
 
-    if (
-      comment.authorId === req.user.id ||
-      comment.post.authorId === req.user.id
-    ) {
-      await prisma.comment.delete({ where: { id: parseInt(id) } });
-      return res.status(200).json({ message: "Comment deleted successfully." });
-    } else {
+    const isCommentAuthor = comment.authorId === req.user.id;
+    const isPostAuthor = comment.post.authorId === req.user.id;
+
+    if (!isCommentAuthor && !isPostAuthor) {
       return res.status(403).json({
         message: "Forbidden! You are not authorized to delete this comment.",
       });
     }
+
+    await prisma.comment.delete({
+      where: { id: parseInt(id as string, 10) },
+    });
+
+    return res.status(200).json({ message: "Comment deleted successfully." });
   } catch (error) {
     next(error);
   }
