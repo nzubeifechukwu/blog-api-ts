@@ -2,7 +2,7 @@
 
 A REST API designed to power a dual-frontend blogging platform: one frontend is for writing, editing and publishing posts, while the other is for reading and commenting on posts.
 
-Built with Node.js, Express, PostgreSQL, and Prisma ORM, this API uses JWT authentication to ensure security.
+Built with TypeScript, Node.js, Express, PostgreSQL, and Prisma ORM, this API uses JWT authentication to ensure security.
 
 **Live Deployment URL:** https://blog-api-lld2.onrender.com/
 
@@ -10,6 +10,7 @@ Built with Node.js, Express, PostgreSQL, and Prisma ORM, this API uses JWT authe
 
 ## Features
 
+- **End-to-End Type Safety:** Fully typed Express request handlers, middleware, and Prisma database models using TypeScript.
 - **Dual-Role Authorization:** Dedicated workflows for `AUTHOR` and `READER` accounts.
 - **Secure Authentication:** Stateless session management via JSON Web Tokens (JWT) and Passport.js.
 - **Comprehensive Post CRUD:** Authors can create, read, update and delete articles.
@@ -20,12 +21,14 @@ Built with Node.js, Express, PostgreSQL, and Prisma ORM, this API uses JWT authe
 
 ## Tech Stack
 
+- **Language:** TypeScript
 - **Runtime Environment:** Node.js
 - **Backend Framework:** Express.js
 - **Database Driver & ORM:** Prisma ORM
 - **Database:** PostgreSQL
-- **Authentication:** Passport.js (JWT Strategy) & bcryptjs (Password Hashing)
+- **Authentication:** Passport.js (JWT Strategy) & bcryptjs (for password hashing)
 - **Input Validation:** express-validator
+- **TypeScript Runner:** `tsx` (development execution & hot-reloading)
 
 ---
 
@@ -70,7 +73,7 @@ Ensure you have the following software installed on your machine:
 ### 2. Clone the Repository
 
 ```bash
-git clone https://github.com/nzubeifechukwu/blog-api.git
+git clone [https://github.com/nzubeifechukwu/blog-api.git](https://github.com/nzubeifechukwu/blog-api.git)
 cd blog-api
 
 ```
@@ -91,6 +94,7 @@ Create a `.env` file in the root directory of your project and configure the tem
 ```env
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public"
 JWT_SECRET="your_super_secret_jwt_key_here"
+NODE_ENV="development"
 
 ```
 
@@ -105,14 +109,26 @@ npx prisma migrate dev --name init_blog_schema
 
 ### 6. Start the Server
 
-To spin up the server with hot-reloading for development:
+#### Development Mode
+
+To spin up the server with hot-reloading using `tsx`:
 
 ```bash
-node --watch app.js
+npm run dev
 
 ```
 
 The server will boot up and listen for requests on `http://localhost:10000`.
+
+#### Production Mode
+
+To build the TypeScript project to JavaScript and start the production server:
+
+```bash
+npm run build
+npm start
+
+```
 
 ---
 
