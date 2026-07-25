@@ -4,7 +4,7 @@ A REST API designed to power a dual-frontend blogging platform: one frontend is 
 
 Built with TypeScript, Node.js, Express, PostgreSQL, and Prisma ORM, this API uses JWT authentication to ensure security.
 
-**Live Deployment URL:** https://blog-api-lld2.onrender.com/
+**Live Deployment URL:** https://blog-api-ts-r4ci.onrender.com
 
 ---
 
@@ -148,7 +148,7 @@ Follow these steps to run and test all 9 CRUD endpoints:
 Depending on whether you want to test the API locally or live in production, select the appropriate environment dropdown in the top-right corner of Postman:
 
 - **To Test Locally:** Select **Blog API - Local**. This routes `{{baseUrl}}` to `http://localhost:10000` (ensure your local server is running via `node --watch app.js`).
-- **To Test Live Deployment:** Select **Blog API - Production**. This routes `{{baseUrl}}` directly to our live hosted web service on Render (`https://blog-api-lld2.onrender.com`), allowing you to test the live endpoints instantly without spinning up a local server or database.
+- **To Test Live Deployment:** Select **Blog API - Production**. This routes `{{baseUrl}}` directly to our live hosted web service on Render (`https://blog-api-ts-r4ci.onrender.com`), allowing you to test the live endpoints instantly without spinning up a local server or database.
 
 ### 3. Automated Route Authentication Tracking
 
