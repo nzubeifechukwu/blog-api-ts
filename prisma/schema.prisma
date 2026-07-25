@@ -15,6 +15,8 @@ datasource db {
 enum Role {
   READER
   AUTHOR
+
+  @@map("blog_role")
 }
 
 model Session {
@@ -22,6 +24,8 @@ model Session {
   sid       String   @unique
   data      String
   expiresAt DateTime
+
+  @@map("blog_session")
 }
 
 model User {
@@ -32,6 +36,8 @@ model User {
   role     Role      @default(READER)
   posts    Post[]
   comments Comment[]
+
+  @@map("blog_user")
 }
 
 model Post {
@@ -44,6 +50,8 @@ model Post {
   author    User      @relation(fields: [authorId], references: [id])
   authorId  Int
   comments  Comment[]
+
+  @@map("blog_post")
 }
 
 model Comment {
@@ -54,4 +62,6 @@ model Comment {
   authorId  Int
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int
+
+  @@map("blog_comment")
 }
