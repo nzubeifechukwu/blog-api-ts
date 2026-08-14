@@ -10,58 +10,64 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  schemas  = ["blog"]
 }
 
-enum Role {
+enum BlogRole {
   READER
   AUTHOR
 
-  @@map("blog_role")
+  @@map("role")
+  @@schema("blog")
 }
 
-model Session {
+model BlogSession {
   id        String   @id
   sid       String   @unique
   data      String
   expiresAt DateTime
 
-  @@map("blog_session")
+  @@map("session")
+  @@schema("blog")
 }
 
-model User {
-  id       Int       @id @default(autoincrement())
-  email    String    @unique
+model BlogUser {
+  id       Int           @id @default(autoincrement())
+  email    String        @unique
   name     String?
   password String
-  role     Role      @default(READER)
-  posts    Post[]
-  comments Comment[]
+  role     BlogRole      @default(READER)
+  posts    BlogPost[]
+  comments BlogComment[]
 
-  @@map("blog_user")
+  @@map("user")
+  @@schema("blog")
 }
 
-model Post {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+model BlogPost {
+  id        Int           @id @default(autoincrement())
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
   title     String
   content   String
-  published Boolean   @default(false)
-  author    User      @relation(fields: [authorId], references: [id])
+  published Boolean       @default(false)
+  author    BlogUser      @relation(fields: [authorId], references: [id])
   authorId  Int
-  comments  Comment[]
+  comments  BlogComment[]
 
-  @@map("blog_post")
+  @@map("post")
+  @@schema("blog")
 }
 
-model Comment {
+model BlogComment {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   content   String
-  author    User     @relation(fields: [authorId], references: [id])
+  author    BlogUser @relation(fields: [authorId], references: [id])
   authorId  Int
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int
 
-  @@map("blog_comment")
+  @@map("comment")
+  @@schema("blog")
 }
