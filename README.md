@@ -4,7 +4,7 @@ A REST API designed to power a dual-frontend blogging platform: one frontend is 
 
 Built with TypeScript, Node.js, Express, PostgreSQL, and Prisma ORM, this API uses JWT authentication to ensure security.
 
-**Live Deployment URL:** https://blog-api-ts-r4ci.onrender.com
+**Live Deployment URL:**
 
 ---
 
