@@ -10,64 +10,48 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  schemas  = ["blog"]
 }
 
-enum BlogRole {
+enum Role {
   READER
   AUTHOR
-
-  @@map("role")
-  @@schema("blog")
 }
 
-model BlogSession {
+model Session {
   id        String   @id
   sid       String   @unique
   data      String
   expiresAt DateTime
-
-  @@map("session")
-  @@schema("blog")
 }
 
-model BlogUser {
-  id       Int           @id @default(autoincrement())
-  email    String        @unique
+model User {
+  id       Int       @id @default(autoincrement())
+  email    String    @unique
   name     String?
   password String
-  role     BlogRole      @default(READER)
-  posts    BlogPost[]
-  comments BlogComment[]
-
-  @@map("user")
-  @@schema("blog")
+  role     Role      @default(READER)
+  posts    Post[]
+  comments Comment[]
 }
 
-model BlogPost {
-  id        Int           @id @default(autoincrement())
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+model Post {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   title     String
   content   String
-  published Boolean       @default(false)
-  author    BlogUser      @relation(fields: [authorId], references: [id])
+  published Boolean   @default(false)
+  author    User      @relation(fields: [authorId], references: [id])
   authorId  Int
-  comments  BlogComment[]
-
-  @@map("post")
-  @@schema("blog")
+  comments  Comment[]
 }
 
-model BlogComment {
+model Comment {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   content   String
-  author    BlogUser @relation(fields: [authorId], references: [id])
+  author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
-  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int
-
-  @@map("comment")
-  @@schema("blog")
 }
